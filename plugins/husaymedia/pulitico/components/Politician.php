@@ -61,7 +61,6 @@ class Politician extends ComponentBase
 
 
 
-
     public function getPolitician()
     {
 
@@ -76,18 +75,6 @@ class Politician extends ComponentBase
     public function onRun()
     {
         $this->politician = $this->page['politician'] = $this->getPolitician();
-
-
-        /*
-         * Add a "url" helper attribute for linking to each category
-         */
-        if ($this->politician && $this->politician->count()) {
-
-        }
-
-
-
-        $this->addJs('assets/js/addTestimonial.js');
     }
 
     public function onAddTestimonial()
@@ -105,6 +92,46 @@ class Politician extends ComponentBase
             {
                 Session::flash('recalculator', Str::random(20));
                 Flash::success(post('flash', 'Your testimonial has been saved!'));
+            }
+            else
+            {
+                throw new ValidationException(errors()->first());
+            }
+
+            /*
+             * Extensbility
+
+            Event::fire('rainlab.forum.topic.post', [$this, $post, $postUrl]);
+            $this->fireEvent('topic.post', [$post, $postUrl]);
+            */
+
+
+        }
+        catch (Exception $ex) {
+            Flash::error($ex->getMessage());
+        }
+    }
+
+    public function onEditTestimonial()
+    {
+        try {
+            if (!$user = Auth::getUser()) {
+                throw new ApplicationException('You should be logged in.');
+            }
+            $politician = $this->getPolitician();
+            $testimonial = TestiModel::where('user_id','=',$user->id)->where('politician_id','=',$politician->id)->first();
+            $testimonial->rating = post('vote');
+            $testimonial->comment = post('testimonial');
+            $testimonial->save();
+            $this->page['testimonial'] = $testimonial;
+
+            //get new instance of politician with updated testimonials
+            $this->page['politician'] = $politician = $this->getPolitician();
+
+            if($result)
+            {
+                Session::flash('recalculator', Str::random(20));
+                Flash::success(post('flash', 'Your testimonial has been edited!'));
             }
             else
             {

@@ -89,16 +89,28 @@ class Politician extends Model {
 
 				public function getUserTestimonial(){
         $user = Auth::getUser();
-        if (!$user) return FALSE;
+        if (!$user) return null;
 								//return Testimonial::with('rating','=',1);
-        return Testimonial::where('user_id','=',$user->id)->where('politician_id','=',$this->id);
+        //return Testimonial::where('user_id','=',$user->id)->where('politician_id','=',$this->id);
+
+								return		$this->testimonials->filter(function($item) use ($user){
+                    	return $item->user_id == $user->id;
+                })->first();
     }
 
 				public function getPositiveTestimonials(){
-        return Testimonial::where('rating','=',1)->where('politician_id','=',$this->id);
+								return		$this->testimonials->filter(function($item){
+                    	return $item->rating == 1;
+                });
+								//return $this->testimonials->where('rating','=',1);
+        //return Testimonial::where('rating','=',1)->where('politician_id','=',$this->id);
     }
 				public function getNegativeTestimonials(){
-        return Testimonial::where('rating','=',0)->where('politician_id','=',$this->id);
+								return		$this->testimonials->filter(function($item){
+                    	return $item->rating == 0;
+                });
+								//return $this->testimonials->where('rating','=',0);
+        //return Testimonial::where('rating','=',0)->where('politician_id','=',$this->id);
     }
 
     public function getRating(){
@@ -110,7 +122,7 @@ class Politician extends Model {
             $subtotal += ($rating->rating) ? 1 : -1;
         }
         $return = ($subtotal / $total ) * 100;
-        return number_format((float)$return, 2, '.', '');
+        return intval($return);
 
     }
 

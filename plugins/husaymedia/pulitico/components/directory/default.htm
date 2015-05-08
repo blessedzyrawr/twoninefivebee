@@ -1,3 +1,4 @@
+
     <div class="q-row">
       <div class="q-col-1-1" id="search_results_placeholder">
         {% if filterResults!=null %}
@@ -39,7 +40,7 @@
                   {% for branch in topLevelTitles %}
                     <li>
                       <a
-                         href="{{ url_current() }}/{{ branch.slug }}/{{ branch.id }}"
+                         href="{{ this.page.baseFileName|app }}/{{ branch.slug }}/{{ branch.id }}"
                          data-request-data="filterSlug:'{{ branch.slug }}',filterId:'{{ branch.id }}',type:'title'"
                          data-request="onFilter"
                          data-request-success="window.branchFilters.collapseAll();window.scrollToTop()"
@@ -52,7 +53,7 @@
                         {% for child in branch.children() %}
                           <li>
                             <a
-                               href="{{ url_current() }}/{{ child.slug }}/{{ child.id }}"
+                               href="{{ this.page.baseFileName|app }}/{{ child.slug }}/{{ child.id }}"
                                data-request-data="filterSlug:'{{ child.slug }}',filterId:'{{ child.id }}',type:'title'"
                                data-request="onFilter"
                                data-request-success="window.branchFilters.collapseAll();window.scrollToTop()"
@@ -74,36 +75,36 @@
            <div class="q-col-1-2">
             <h3>Filter by Location:</h3>
             <ul id="filterRegion">
-                  {% for regions in topLevelLocations %}
+                  {% for region in __SELF__.getRegions() %}
                     <li>
                       <a
-                         href="{{ url_current() }}/{{ regions.slug }}/{{ regions.id }}"
-                         data-request-data="filterSlug:'{{ regions.slug }}',filterId:'{{ regions.id }}',type:'region'"
+                         href="{{ this.page.baseFileName|app }}/{{ region.slug }}/{{ region.id }}"
+                         data-request-data="filterSlug:'{{ region.slug }}',filterId:'{{ region.id }}',type:'region'"
                          data-request="onFilter"
                          data-request-success="window.regionFilters.collapseAll();window.scrollToTop()"
                          data-request-update="'{{ __SELF__ }}::filter_result': '#search_results_placeholder'" >
-                          {{ regions.name }}
+                          {{ region.name }}
                       </a>
-                      {% if regions.children().count > 0 %}
+                      {% if __SELF__.getProvinces(region.id).count > 0 %}
 
                         <ul>
-                        {% for provinces in regions.children() %}
+                        {% for province in __SELF__.getProvinces(region.id) %}
                           <li>
                             <a
-                               href="{{ url_current() }}/{{ provinces.slug }}/{{ provinces.id }}"
-                               data-request-data="filterSlug:'{{ provinces.slug }}',filterId:'{{ provinces.id }}',type:'region'"
+                               href="{{ this.page.baseFileName|app }}/{{ province.slug }}/{{ province.id }}"
+                               data-request-data="filterSlug:'{{ province.slug }}',filterId:'{{ province.id }}',type:'region'"
                                data-request="onFilter"
                                data-request-success="window.regionFilters.collapseAll();window.scrollToTop()"
                                data-request-update="'{{ __SELF__ }}::filter_result': '#search_results_placeholder'" >
-                                {{ provinces.name }}
+                                {{ province.name }}
                             </a>
-                              {% if provinces.children().count > 0 %}
+                              {% if __SELF__.getCities(province.id).count > 0 %}
 
                                 <ul>
-                                {% for city in provinces.children() %}
+                                {% for city in __SELF__.getCities(province.id) %}
                                   <li>
                                     <a
-                                       href="{{ url_current() }}/{{ city.slug }}/{{ city.id }}"
+                                       href="{{ this.page.baseFileName|app }}/{{ city.slug }}/{{ city.id }}"
                                        data-request-data="filterSlug:'{{ city.slug }}',filterId:'{{ city.id }}',type:'region'"
                                        data-request="onFilter"
                                        data-request-success="window.regionFilters.collapseAll();window.scrollToTop()"
